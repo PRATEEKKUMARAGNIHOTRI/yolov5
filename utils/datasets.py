@@ -177,7 +177,7 @@ class LoadImages:  # for inference
         else:
             # Read image
             self.count += 1
-            img0 = np.load(path)
+            img0 = np.load(path,allow_pickle=True,fix_imports=True)
             img0 = img0 * (255 / img0.max())
             assert img0 is not None, 'Image Not Found ' + path
 
@@ -623,7 +623,7 @@ def load_image(self, index):
     img = self.imgs[index]
     if img is None:  # not cached
         path = self.img_files[index]
-        img = np.load(path)
+        img = np.load(path,allow_pickle=True,fix_imports=True)
         img = img * (255 / img.max())
         assert img is not None, 'Image Not Found ' + path
         h0, w0 = img.shape[:2]  # orig hw
