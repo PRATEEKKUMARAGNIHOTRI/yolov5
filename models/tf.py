@@ -209,7 +209,7 @@ class TFDetect(keras.layers.Layer):
         self.anchor_grid = tf.reshape(self.anchors * tf.reshape(self.stride, [self.nl, 1, 1]),
                                       [self.nl, 1, -1, 1, 2])
         self.m = [TFConv2d(x, self.no * self.na, 1, w=w.m[i]) for i, x in enumerate(ch)]
-        self.training = False  # set to False after building model
+        self.training = True  # set to False after building model
         self.imgsz = imgsz
         for i in range(self.nl):
             ny, nx = self.imgsz[0] // self.stride[i], self.imgsz[1] // self.stride[i]
@@ -222,7 +222,7 @@ class TFDetect(keras.layers.Layer):
             x.append(self.m[i](inputs[i]))
             # x(bs,20,20,255) to x(bs,3,20,20,85)
             ny, nx = self.imgsz[0] // self.stride[i], self.imgsz[1] // self.stride[i]
-            x[i] = tf.transpose(tf.reshape(x[i], [-1, ny * nx, self.na, self.no]), [0, 2, 1, 3])
+            x[i] = tf.transpose(tf.reshape(x[i], [-1, ny, nx, self.na, self.no]), [0, 3, 1, 2, 4])
 
             if not self.training:  # inference
                 y = tf.sigmoid(x[i])
@@ -233,7 +233,7 @@ class TFDetect(keras.layers.Layer):
                 wh /= tf.constant([[self.imgsz[1], self.imgsz[0]]], dtype=tf.float32)
                 y = tf.concat([xy, wh, y[..., 4:]], -1)
                 z.append(tf.reshape(y, [-1, self.na * ny * nx, self.no]))
-
+                
         return x if self.training else (tf.concat(z, 1), x)
 
     @staticmethod
