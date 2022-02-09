@@ -48,7 +48,6 @@ class TFBN(keras.layers.Layer):
     def call(self, inputs):
         return self.bn(inputs)
 
-
 class TFPad(keras.layers.Layer):
     def __init__(self, pad):
         super().__init__()
@@ -56,6 +55,14 @@ class TFPad(keras.layers.Layer):
 
     def call(self, inputs):
         return tf.pad(inputs, self.pad, mode='constant', constant_values=0)
+
+# class TFPad(keras.layers.Layer):
+#     def __init__(self, pad):
+#         super().__init__()
+#         self.pad = tf.constant([[0, 0], [pad, pad], [pad, pad], [0, 0]])
+
+#     def call(self, inputs):
+#         return tf.pad(inputs, self.pad, mode='constant', constant_values=0)
 
 
 class TFConv(keras.layers.Layer):
